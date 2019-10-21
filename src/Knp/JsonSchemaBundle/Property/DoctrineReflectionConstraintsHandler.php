@@ -51,7 +51,13 @@ class DoctrineReflectionConstraintsHandler implements PropertyHandlerInterface
 
     private function getConstraintsForProperty($className, Property $property)
     {
-        $classMetadata = $this->em->getMetadataFactory()->getMetadataFor($className);
+        $metadataFactory = $this->em->getMetadataFactory();
+        // not an entity ?
+        if ($metadataFactory->isTransient($className)) {
+            return array();
+        }
+
+        $classMetadata = $metadataFactory->getMetadataFor($className);
         foreach ($classMetadata->getFieldNames() as $fieldName) {
             if ($fieldName === $property->getName()) {
                 return $classMetadata->getTypeOfField($fieldName);
