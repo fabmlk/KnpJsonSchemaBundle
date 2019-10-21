@@ -2,18 +2,16 @@
 
 namespace Knp\JsonSchemaBundle\Schema;
 
-use Knp\JsonSchemaBundle\Reflection\ReflectionFactory;
-use Knp\JsonSchemaBundle\Schema\SchemaRegistry;
-use Knp\JsonSchemaBundle\Model\SchemaFactory;
-use Knp\JsonSchemaBundle\Model\Schema;
-use Knp\JsonSchemaBundle\Model\PropertyFactory;
 use Knp\JsonSchemaBundle\Model\Property;
+use Knp\JsonSchemaBundle\Model\PropertyFactory;
+use Knp\JsonSchemaBundle\Model\Schema;
+use Knp\JsonSchemaBundle\Model\SchemaFactory;
 use Knp\JsonSchemaBundle\Property\PropertyHandlerInterface;
+use Knp\JsonSchemaBundle\Reflection\ReflectionFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SchemaGenerator
 {
-    protected $jsonValidator;
     protected $reflectionFactory;
     protected $schemaRegistry;
     protected $schemaFactory;
@@ -23,14 +21,12 @@ class SchemaGenerator
     protected $defaultOptions = array();
 
     public function __construct(
-        \JsonSchema\Validator $jsonValidator,
         UrlGeneratorInterface $urlGenerator,
         ReflectionFactory $reflectionFactory,
         SchemaRegistry $schemaRegistry,
         SchemaFactory $schemaFactory,
         PropertyFactory $propertyFactory
     ) {
-        $this->jsonValidator     = $jsonValidator;
         $this->urlGenerator      = $urlGenerator;
         $this->reflectionFactory = $reflectionFactory;
         $this->schemaRegistry    = $schemaRegistry;
@@ -78,16 +74,6 @@ class SchemaGenerator
             }
         }
 
-        if (false === $this->validateSchema($schema)) {
-            $message = "Generated schema is invalid. \n" .
-                "The following problem(s) were detected:\n";
-            foreach ($this->jsonValidator->getErrors() as $error) {
-                $message .= sprintf("[%s] %s\n", $error['property'], $error['message']);
-            }
-            $message .= sprintf("Json schema:\n%s", json_encode($schema, JSON_PRETTY_PRINT));
-            throw new \Exception($message);
-        }
-
         return $schema;
     }
 
@@ -99,23 +85,6 @@ class SchemaGenerator
     public function getPropertyHandlers()
     {
         return array_values(iterator_to_array(clone $this->propertyHandlers));
-    }
-
-    /**
-     * Validate a schema against the meta-schema provided by http://json-schema.org/schema
-     *
-     * @param Schema $schema a json schema
-     *
-     * @return boolean
-     */
-    private function validateSchema(Schema $schema)
-    {
-        $this->jsonValidator->check(
-            json_decode(json_encode($schema->jsonSerialize())),
-            json_decode(file_get_contents($schema->getSchema()))
-        );
-
-        return $this->jsonValidator->isValid();
     }
 
     private function applyPropertyHandlers($className, Property $property)

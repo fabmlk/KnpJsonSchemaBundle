@@ -10,7 +10,6 @@ services:
     json_schema.generator:
         class: Knp\JsonSchemaBundle\Schema\SchemaGenerator
         arguments:
-            - '@json_schema.validator'
             - '@router'
             - '@json_schema.reflection_factory'
             - '@json_schema.registry'
@@ -43,10 +42,6 @@ services:
     json_schema.filesystem:
         public: false
         class: Symfony\Component\Filesystem\Filesystem
-
-    json_schema.validator:
-        public: false
-        class: JsonSchema\Validator
 
     json_schema.response.factory:
         class: Knp\JsonSchemaBundle\HttpFoundation\JsonResponseFactory
