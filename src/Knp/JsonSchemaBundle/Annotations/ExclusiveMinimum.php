@@ -8,4 +8,6 @@ namespace Knp\JsonSchemaBundle\Annotations;
  */
 class ExclusiveMinimum
 {
+    /** @var integer */
+    public $minimum;
 }

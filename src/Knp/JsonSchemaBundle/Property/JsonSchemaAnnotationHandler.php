@@ -24,13 +24,13 @@ class JsonSchemaAnnotationHandler implements PropertyHandlerInterface
                 $property->setMinimum($constraint->minimum);
             }
             if ($constraint instanceof \Knp\JsonSchemaBundle\Annotations\ExclusiveMinimum) {
-                $property->setExclusiveMinimum(true);
+                $property->setExclusiveMinimum($constraint->minimum);
             }
             if ($constraint instanceof \Knp\JsonSchemaBundle\Annotations\Maximum) {
                 $property->setMaximum($constraint->maximum);
             }
             if ($constraint instanceof \Knp\JsonSchemaBundle\Annotations\ExclusiveMaximum) {
-                $property->setExclusiveMaximum(true);
+                $property->setExclusiveMaximum($constraint->maximum);
             }
             if ($constraint instanceof \Knp\JsonSchemaBundle\Annotations\Disallow) {
                 $property->setDisallowed($constraint->disallowed);

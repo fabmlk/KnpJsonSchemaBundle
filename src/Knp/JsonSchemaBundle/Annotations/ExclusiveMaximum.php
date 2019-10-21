@@ -8,4 +8,6 @@ namespace Knp\JsonSchemaBundle\Annotations;
  */
 class ExclusiveMaximum
 {
+    /** @var integer */
+    public $maximum;
 }

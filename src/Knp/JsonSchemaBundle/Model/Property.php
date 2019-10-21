@@ -185,7 +185,7 @@ class Property implements \JsonSerializable
         return $this;
     }
 
-    public function isExclusiveMinimum()
+    public function getExclusiveMinimum()
     {
         return $this->exclusiveMinimum;
     }
@@ -199,7 +199,7 @@ class Property implements \JsonSerializable
         return $this;
     }
 
-    public function isExclusiveMaximum()
+    public function getExclusiveMaximum()
     {
         return $this->exclusiveMaximum;
     }
