@@ -20,6 +20,7 @@ class SchemaGenerator
     protected $propertyFactory;
     protected $propertyHandlers;
     protected $aliases = array();
+    protected $defaultOptions = array();
 
     public function __construct(
         \JsonSchema\Validator $jsonValidator,
@@ -36,18 +37,25 @@ class SchemaGenerator
         $this->schemaFactory     = $schemaFactory;
         $this->propertyFactory   = $propertyFactory;
         $this->propertyHandlers  = new \SplPriorityQueue;
+        $this->defaultOptions = array(
+            'version' => Schema::SCHEMA_V7,
+            'id' => function ($alias) {
+                return $this->urlGenerator->generate('show_json_schema', array('alias' => $alias), true) . '#';
+            }
+        );
     }
 
-    public function generate($alias)
+    public function generate($alias, $options = array())
     {
         $this->aliases[] = $alias;
+        $options = array_merge($this->defaultOptions, $options);
 
         $className = $this->schemaRegistry->getNamespace($alias);
         $refl      = $this->reflectionFactory->create($className);
         $schema    = $this->schemaFactory->createSchema(ucfirst($alias));
 
-        $schema->setId($this->urlGenerator->generate('show_json_schema', array('alias' => $alias), true) . '#');
-        $schema->setSchema(Schema::SCHEMA_V3);
+        $schema->setId(is_callable($options['id']) ? $options['id']($alias) : (string) $options['id']);
+        $schema->setSchema($options['version']);
         $schema->setType(Schema::TYPE_OBJECT);
 
         foreach ($refl->getProperties() as $property) {
@@ -71,8 +79,7 @@ class SchemaGenerator
         }
 
         if (false === $this->validateSchema($schema)) {
-            $message = "Generated schema is invalid. Please report on" .
-                "https://github.com/KnpLabs/KnpJsonSchemaBundle/issues/new.\n" .
+            $message = "Generated schema is invalid. \n" .
                 "The following problem(s) were detected:\n";
             foreach ($this->jsonValidator->getErrors() as $error) {
                 $message .= sprintf("[%s] %s\n", $error['property'], $error['message']);
