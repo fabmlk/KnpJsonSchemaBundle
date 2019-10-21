@@ -19,11 +19,7 @@ class SchemaGenerator
     protected $schemaFactory;
     protected $propertyFactory;
     protected $propertyHandlers;
-    protected $strictPropertyHandlers;
     protected $aliases = array();
-
-    const STRICT = 'strict';
-    const LOOSE = 'loose';
 
     public function __construct(
         \JsonSchema\Validator $jsonValidator,
@@ -40,16 +36,10 @@ class SchemaGenerator
         $this->schemaFactory     = $schemaFactory;
         $this->propertyFactory   = $propertyFactory;
         $this->propertyHandlers  = new \SplPriorityQueue;
-        $this->strictPropertyHandlers  = new \SplPriorityQueue;
     }
 
-    public function generate($alias, $strict = self::LOOSE)
+    public function generate($alias)
     {
-        if ($strict == self::STRICT)
-        {
-            $alias = 'strict_'. $alias;
-        }
-
         $this->aliases[] = $alias;
 
         $className = $this->schemaRegistry->getNamespace($alias);
@@ -62,21 +52,13 @@ class SchemaGenerator
 
         foreach ($refl->getProperties() as $property) {
             $property = $this->propertyFactory->createProperty($property->name);
-
-            if ($strict == self::STRICT)
-            {
-                $this->applyStrictPropertyHandlers($className, $property);
-            }
-            else
-            {
-                $this->applyPropertyHandlers($className, $property);
-            }
+            $this->applyPropertyHandlers($className, $property);
 
             if (!$property->isIgnored() && $property->hasType(Property::TYPE_OBJECT) && $property->getObject()) {
                 // Make sure that we're not creating a reference to the parent schema of the property
                 if (!in_array($property->getObject(), $this->aliases)) {
                     $property->setSchema(
-                        $this->generate($property->getObject(), self::STRICT)
+                        $this->generate($property->getObject())
                     );
                 } else {
                     $property->setIgnored(true);
@@ -107,12 +89,6 @@ class SchemaGenerator
         $this->propertyHandlers->insert($handler, $priority);
     }
 
-
-    public function registerStrictPropertyHandler(PropertyHandlerInterface $handler, $priority)
-    {
-        $this->strictPropertyHandlers->insert($handler, $priority);
-    }
-
     public function getPropertyHandlers()
     {
         return array_values(iterator_to_array(clone $this->propertyHandlers));
@@ -138,19 +114,6 @@ class SchemaGenerator
     private function applyPropertyHandlers($className, Property $property)
     {
         $propertyHandlers = clone $this->propertyHandlers;
-
-        while ($propertyHandlers->valid()) {
-            $handler = $propertyHandlers->current();
-
-            $handler->handle($className, $property);
-
-            $propertyHandlers->next();
-        }
-    }
-
-    private function applyStrictPropertyHandlers($className, Property $property)
-    {
-        $propertyHandlers = clone $this->strictPropertyHandlers;
 
         while ($propertyHandlers->valid()) {
             $handler = $propertyHandlers->current();
