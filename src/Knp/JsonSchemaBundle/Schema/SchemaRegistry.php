@@ -5,7 +5,6 @@ namespace Knp\JsonSchemaBundle\Schema;
 class SchemaRegistry
 {
     protected $registry = array();
-    protected $groups = array();
 
     public function register($alias, $namespace)
     {
@@ -19,16 +18,6 @@ class SchemaRegistry
 
         $this->registry[$alias] = $namespace;
         $this->registry['strict_' . $alias] = $namespace;
-    }
-
-    public function getGroups($alias)
-    {
-        return !empty($this->groups[$alias]) ? $this->groups[$alias] : [];
-    }
-
-    public function groups($alias, array $groups = [])
-    {
-        $this->groups[$alias] = $groups;
     }
 
     public function all()
