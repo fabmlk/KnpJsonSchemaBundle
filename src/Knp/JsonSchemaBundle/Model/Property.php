@@ -48,6 +48,7 @@ class Property implements \JsonSerializable
     protected $object;
     protected $multiple;
     protected $schema;
+    protected $default;
 
     public function setName($name)
     {
@@ -294,6 +295,17 @@ class Property implements \JsonSerializable
         return $this;
     }
 
+    public function setDefault($value)
+    {
+        $this->default = $value;
+        return $this;
+    }
+
+    public function getDefault($value)
+    {
+        return $this->default;
+    }
+
     /**
      * @return Schema
      */
@@ -375,6 +387,10 @@ class Property implements \JsonSerializable
             } else {
                 $serialized = $serialized + $schema;
             }
+        }
+
+        if ($this->default) {
+            $serialized['default'] = $this->default;
         }
 
         return $serialized;
