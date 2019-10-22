@@ -48,7 +48,7 @@ class SchemaGenerator
 
         $className = $this->schemaRegistry->getNamespace($alias);
         $refl      = $this->reflectionFactory->create($className);
-        $schema    = $this->schemaFactory->createSchema(ucfirst($alias));
+        $schema    = $this->schemaFactory->createSchema($alias);
 
         $schema->setId(is_callable($options['id']) ? $options['id']($alias) : (string) $options['id']);
         $schema->setSchema($options['version']);
