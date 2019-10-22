@@ -49,6 +49,7 @@ class Property implements \JsonSerializable
     protected $multiple;
     protected $schema;
     protected $default;
+    protected $unique = false;
 
     public function setName($name)
     {
@@ -306,6 +307,16 @@ class Property implements \JsonSerializable
         return $this->default;
     }
 
+    public function setUnique($unique)
+    {
+        $this->unique = $unique;
+    }
+
+    public function isUnique($unique)
+    {
+        return $this->unique;
+    }
+
     /**
      * @return Schema
      */
@@ -377,6 +388,14 @@ class Property implements \JsonSerializable
             $serialized['description'] = $this->description;
         }
 
+        if ($this->default) {
+            $serialized['default'] = $this->default;
+        }
+
+        if ($this->unique) {
+            $serialized['uniqueItems'] = true;
+        }
+
         if ($this->schema && $this->hasType(self::TYPE_OBJECT)) {
             $schema = $this->schema->jsonSerialize();
             unset($schema['$schema'], $schema['id']);
@@ -387,10 +406,11 @@ class Property implements \JsonSerializable
             } else {
                 $serialized = $serialized + $schema;
             }
-        }
-
-        if ($this->default) {
-            $serialized['default'] = $this->default;
+        } else if ($this->multiple) {
+            $parentserialized = array();
+            $parentserialized['type'] = 'array';
+            $parentserialized['items'] = $serialized;
+            $serialized = $parentserialized;
         }
 
         return $serialized;

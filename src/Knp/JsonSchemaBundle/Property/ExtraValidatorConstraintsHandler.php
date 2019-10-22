@@ -16,14 +16,19 @@ class ExtraValidatorConstraintsHandler implements PropertyHandlerInterface
 
     public function handle($className, Property $property)
     {
-        foreach ($this->getConstraintsForProperty($className, $property) as $constraint) {
+        $this->doHandle($this->getConstraintsForProperty($className, $property), $property);
+    }
+
+    private function doHandle(iterable $constraints, Property $property)
+    {
+        foreach ($constraints as $constraint) {
             if ($constraint instanceof \Symfony\Component\Validator\Constraints\Choice) {
-              if ($constraint->callback && is_callable($constraint->callback)) {
-                  $choices = call_user_func($constraint->callback);
-              } else {
-                  $choices = $constraint->choices;
-              }
-              $property->setEnumeration($choices);
+                if ($constraint->callback && is_callable($constraint->callback)) {
+                    $choices = call_user_func($constraint->callback);
+                } else {
+                    $choices = $constraint->choices;
+                }
+                $property->setEnumeration($choices);
             }
             if ($constraint instanceof \Symfony\Component\Validator\Constraints\Length) {
                 $property->setMinimum($constraint->min);
@@ -50,6 +55,16 @@ class ExtraValidatorConstraintsHandler implements PropertyHandlerInterface
                 } elseif ('6' === $constraint->version) {
                     $property->setFormat(Property::FORMAT_IPV6);
                 }
+            }
+            if ($constraint instanceof \Symfony\Component\Validator\Constraints\Unique) {
+                $property->setUnique(true);
+            }
+            if ($constraint instanceof \Symfony\Component\Validator\Constraints\All) {
+                // only the type from array element will saved as property
+                // will have type "array" anyway since multiple === true
+                $property->setType(null);
+                $this->doHandle($constraint->constraints, $property);
+                $property->setMultiple(true);
             }
         }
     }
