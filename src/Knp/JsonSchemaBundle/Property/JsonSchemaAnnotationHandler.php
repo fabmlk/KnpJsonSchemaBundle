@@ -65,7 +65,7 @@ class JsonSchemaAnnotationHandler implements PropertyHandlerInterface
                 $property->setDefault($constraint->value);
             }
             if ($constraint instanceof \Knp\JsonSchemaBundle\Annotations\Name) {
-                $property->setName($constraint->name);
+                $property->setDisplayName($constraint->name);
             }
         }
     }

@@ -30,6 +30,7 @@ class Property implements \JsonSerializable
     const FORMAT_HOSTNAME = 'host-name';
 
     protected $name;
+    protected $displayName;
     protected $title;
     protected $description;
     protected $required = false;
@@ -54,13 +55,23 @@ class Property implements \JsonSerializable
     public function setName($name)
     {
         $this->name = $name;
-        
+
         return $this;
     }
 
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setDisplayName($name)
+    {
+        $this->displayName = $name;
+    }
+
+    public function getDisplayName()
+    {
+        return $this->displayName;
     }
 
     public function setTitle($title)

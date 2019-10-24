@@ -33,7 +33,8 @@ class Schema implements \JsonSerializable
 
     public function addProperty(Property $property)
     {
-        $this->properties[$property->getName()] = $property;
+        $name = $property->getDisplayName() ?: $property->getName();
+        $this->properties[$name] = $property;
     }
 
     public function getId()
@@ -73,12 +74,6 @@ class Schema implements \JsonSerializable
 
     public function jsonSerialize()
     {
-        $properties = array();
-
-        foreach ($this->properties as $i => $property) {
-            $properties[$i] = $property->jsonSerialize();
-        }
-
         $serialized = array(
             'title'                                              => $this->title,
             'type'                                               => $this->type,

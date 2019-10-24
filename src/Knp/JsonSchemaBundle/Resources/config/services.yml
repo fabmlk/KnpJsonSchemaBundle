@@ -83,6 +83,14 @@ services:
         tags:
             - { name: json_schema.property.handler, priority: 30 }
 
+    json_schema.property.handler.serializer_reflection_handler:
+        public: false
+        class: Knp\JsonSchemaBundle\Property\SerializerReflectionConstraintsHandler
+        arguments:
+            - '@serializer.mapping.class_metadata_factory'
+        tags:
+            - { name: json_schema.property.handler, priority: 40 }
+
     form.chain.guesser:
         public: false
         class: Symfony\Component\Form\FormTypeGuesserChain
