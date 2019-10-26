@@ -49,6 +49,35 @@ services:
             - '@json_schema.registry'
             - '@router'
 
+    # validator.mapping.class_metadata_factory is also used for
+    # Symfony\Component\Form\FormTypeGuesserInterface\ValidatorTypeGuesser
+    # so we decorate it in order for our FormTypeGuesserHandler to support
+    # traits as well.
+    # In the container, the original LazyLoadingMetadataFactory is created
+    # from the factory method Symfony\Component\Validator\ValidatorBuilder::getValidator()
+    # which does not inject its loader chain into the container.
+    # Fortunately, the ValidatorBuilder exposes a public getLoaders() method
+    # we can call to fetch and re-inject the exact same loaders into a
+    # brand-new LoaderChain.
+    json_schema.bridge.lazy_loading_metadata_factory:
+        class: Knp\JsonSchemaBundle\Bridge\TraitAwareLazyLoadingMetadataFactory
+        decorates: validator.mapping.class_metadata_factory
+        arguments:
+            - '@json_schema.bridge.lazy_loading_metadata_factory.inner'
+            - !service
+                class: Symfony\Component\Validator\Mapping\Loader\LoaderChain
+                arguments:
+                    - "@=service('validator.builder').getLoaders()"
+
+    # Contrary to validator's LazyLoadingMetadataFactory, the serializer's
+    # loader chain is exposed directly to the container.
+    json_schema.bridge.class_metadata_factory:
+        class: Knp\JsonSchemaBundle\Bridge\TraitAwareClassMetadataFactory
+        decorates: serializer.mapping.class_metadata_factory
+        arguments:
+            - '@json_schema.bridge.class_metadata_factory.inner'
+            - '@serializer.mapping.chain_loader'
+
     json_schema.property.handler.annotation:
         public: false
         class: Knp\JsonSchemaBundle\Property\JsonSchemaAnnotationHandler

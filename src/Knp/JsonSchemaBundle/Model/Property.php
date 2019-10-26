@@ -47,7 +47,7 @@ class Property implements \JsonSerializable
     protected $disallowed = array();
     protected $ignored = false;
     protected $object;
-    protected $multiple;
+    protected $multiple = false;
     protected $schema;
     protected $default;
     protected $unique = false;

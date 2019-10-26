@@ -34,7 +34,8 @@ class ExtraValidatorConstraintsHandler implements PropertyHandlerInterface
                 $property->setMinimum($constraint->min);
                 $property->setMaximum($constraint->max);
             }
-            if ($constraint instanceof \Symfony\Component\Validator\Constraints\Type) {
+            if ($constraint instanceof \Symfony\Component\Validator\Constraints\Type &&
+                false === $property->getMultiple()) {
                 $property->addType($constraint->type);
             }
             if ($constraint instanceof \Symfony\Component\Validator\Constraints\Date) {
@@ -60,8 +61,8 @@ class ExtraValidatorConstraintsHandler implements PropertyHandlerInterface
                 $property->setUnique(true);
             }
             if ($constraint instanceof \Symfony\Component\Validator\Constraints\All) {
-                // only the type from array element will saved as property
-                // will have type "array" anyway since multiple === true
+                // only the type from the array elements will be saved as the property
+                // itself will have the type "array" anyway since multiple is true
                 $property->setType(null);
                 $this->doHandle($constraint->constraints, $property);
                 $property->setMultiple(true);

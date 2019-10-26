@@ -7,6 +7,9 @@ use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
 
 class SerializerReflectionConstraintsHandler implements PropertyHandlerInterface
 {
+    /**
+     * @var ClassMetadataFactoryInterface
+     */
     private $classMetadataFactory;
 
     public function __construct(ClassMetadataFactoryInterface $classMetadataFactory)
