@@ -15,6 +15,7 @@ class Schema implements \JsonSerializable
     private $schema;
     private $properties;
     private $additionalProperties;
+    private $groups;
 
     public function getTitle()
     {
@@ -72,18 +73,32 @@ class Schema implements \JsonSerializable
         $this->additionalProperties = $additional;
     }
 
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
+    }
+
     public function jsonSerialize()
     {
+        $properties = array_filter($this->properties, function ($property) {
+            return empty($this->groups) || !empty(array_intersect($this->groups, $property->getGroups()));
+        });
+
         $serialized = array(
             'title'                                              => $this->title,
             'type'                                               => $this->type,
             '$schema'                                            => $this->schema,
             (Schema::SCHEMA_V4 === $this->schema ? 'id' : '$id') => $this->id,
-            'properties'                                         => $this->properties,
+            'properties'                                         => $properties,
             'additionalProperties'                               => $this->additionalProperties,
         );
 
-        $requiredProperties = array_keys(array_filter($this->properties, function ($property) {
+        $requiredProperties = array_keys(array_filter($properties, function ($property) {
             return $property->isRequired();
         }));
 

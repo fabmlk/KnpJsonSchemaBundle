@@ -19,9 +19,19 @@ class SerializerReflectionConstraintsHandler implements PropertyHandlerInterface
 
     public function handle($className, Property $property)
     {
-        $name = $this->getConstraintsForProperty($className, $property);
+        $attributeMetadata = $this->getConstraintsForProperty($className, $property);
 
-        $property->setDisplayName($name);
+        if (null === $attributeMetadata) {
+            return;
+        }
+
+        if ($name = $attributeMetadata->getSerializedName()) {
+            $property->setDisplayName($name);
+        }
+
+        if ($groups = $attributeMetadata->getGroups()) {
+            $property->setGroups($groups);
+        }
     }
 
     private function getConstraintsForProperty($className, Property $property)
@@ -30,10 +40,10 @@ class SerializerReflectionConstraintsHandler implements PropertyHandlerInterface
 
         foreach ($classMetadata->getAttributesMetadata() as $attributeMetadata) {
             if ($attributeMetadata->name === $property->getName()) {
-                return $attributeMetadata->getSerializedName();
+                return $attributeMetadata;
             }
         }
 
-        return $property->getName();
+        return null;
     }
 }

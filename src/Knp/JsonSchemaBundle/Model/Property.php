@@ -51,6 +51,7 @@ class Property implements \JsonSerializable
     protected $schema;
     protected $default;
     protected $unique = false;
+    protected $groups = array();
 
     public function setName($name)
     {
@@ -319,6 +320,16 @@ class Property implements \JsonSerializable
     public function isUnique($unique)
     {
         return $this->unique;
+    }
+
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    public function setGroups(array $groups)
+    {
+        $this->groups = $groups;
     }
 
     /**

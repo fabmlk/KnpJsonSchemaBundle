@@ -37,7 +37,8 @@ class SchemaGenerator
             'version' => Schema::SCHEMA_V7,
             'id' => function ($alias) {
                 return $this->urlGenerator->generate('show_json_schema', array('alias' => $alias), true) . '#';
-            }
+            },
+            'groups' => array()
         );
     }
 
@@ -53,6 +54,7 @@ class SchemaGenerator
         $schema->setId(is_callable($options['id']) ? $options['id']($alias) : (string) $options['id']);
         $schema->setSchema($options['version']);
         $schema->setType(Schema::TYPE_OBJECT);
+        $schema->setGroups($options['groups']);
 
         foreach ($refl->getProperties() as $property) {
             $property = $this->propertyFactory->createProperty($property->name);
