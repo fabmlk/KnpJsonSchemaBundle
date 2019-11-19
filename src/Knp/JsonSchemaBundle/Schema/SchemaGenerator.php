@@ -38,7 +38,8 @@ class SchemaGenerator
             'id' => function ($alias) {
                 return $this->urlGenerator->generate('show_json_schema', array('alias' => $alias), true) . '#';
             },
-            'groups' => array()
+            'groups' => array(),
+            'additionalProperties' => true
         );
     }
 
@@ -55,6 +56,7 @@ class SchemaGenerator
         $schema->setSchema($options['version']);
         $schema->setType(Schema::TYPE_OBJECT);
         $schema->setGroups($options['groups']);
+        $schema->setAdditionalProperties($options['additionalProperties']);
 
         foreach ($refl->getProperties() as $property) {
             $property = $this->propertyFactory->createProperty($property->name);
