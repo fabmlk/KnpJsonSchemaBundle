@@ -36,7 +36,10 @@ class ExtraValidatorConstraintsHandler implements PropertyHandlerInterface
             }
             if ($constraint instanceof \Symfony\Component\Validator\Constraints\Type &&
                 false === $property->getMultiple()) {
-                $property->addType($constraint->type);
+                $property->addType($this->getPropertyType($constraint));
+                if ('DateTime' === $constraint->type) {
+                    $property->setFormat(Property::FORMAT_DATETIME);
+                }
             }
             if ($constraint instanceof \Symfony\Component\Validator\Constraints\Date) {
                 $property->setFormat(Property::FORMAT_DATE);
@@ -81,5 +84,32 @@ class ExtraValidatorConstraintsHandler implements PropertyHandlerInterface
         }
 
         return array();
+    }
+
+    // https://symfony.com/doc/current/reference/constraints/Type.html
+    private function getPropertyType(\Symfony\Component\Validator\Constraints\Type $type)
+    {
+        switch ($type->type) {
+            case 'array':
+            case 'iterable':
+                return Property::TYPE_ARRAY;
+            case 'bool':
+                return Property::TYPE_BOOLEAN;
+            case 'numeric':
+            case 'float':
+            case 'real':
+            case 'long':
+            case 'double':
+                return Property::TYPE_NUMBER;
+            case 'integer':
+            case 'int':
+                return Property::TYPE_INTEGER;
+            case 'null':
+                return Property::TYPE_NULL;
+            case 'resource':
+                return Property::TYPE_OBJECT;
+            default:
+                return Property::TYPE_STRING;
+        }
     }
 }

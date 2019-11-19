@@ -211,7 +211,9 @@ class Property implements \JsonSerializable
 
     public function setFormat($format)
     {
-        $this->format = $format;
+        if (!\is_null($format)) {
+            $this->format = $format;
+        }
 
         return $this;
     }

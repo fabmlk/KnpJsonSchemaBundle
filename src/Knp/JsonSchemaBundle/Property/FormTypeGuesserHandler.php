@@ -26,21 +26,22 @@ class FormTypeGuesserHandler implements PropertyHandlerInterface
             $property->addType($this->getPropertyType($type));
             $property->setFormat($this->getPropertyFormat($type));
 
-            if ($type->getType() == 'entity') {
-                $options = $type->getOptions();
-
-                if (isset($options['class']) && $this->registry->hasNamespace($options['class'])) {
-                    $alias = $this->registry->getAlias($options['class']);
-
-                    if ($alias) {
-                        $property->setObject($alias);
-
-                        if (isset($options['multiple']) && $options['multiple'] == true) {
-                            $property->setMultiple(true);
-                        }
-                    }
-                }
-            }
+// No longer works: type can never be equal to 'entity'
+//            if ($type->getType() == 'entity') {
+//                $options = $type->getOptions();
+//
+//                if (isset($options['class']) && $this->registry->hasNamespace($options['class'])) {
+//                    $alias = $this->registry->getAlias($options['class']);
+//
+//                    if ($alias) {
+//                        $property->setObject($alias);
+//
+//                        if (isset($options['multiple']) && $options['multiple'] == true) {
+//                            $property->setMultiple(true);
+//                        }
+//                    }
+//                }
+//            }
         }
 
         if ($required = $this->guesser->guessRequired($className, $property->getName())) {
@@ -64,27 +65,17 @@ class FormTypeGuesserHandler implements PropertyHandlerInterface
     private function getPropertyType(TypeGuess $type)
     {
         switch ($type->getType()) {
-            case 'entity':
+            case 'Symfony\Component\Form\Extension\Core\Type\FileType':
                 return Property::TYPE_OBJECT;
-            case 'collection':
+            case 'Symfony\Component\Form\Extension\Core\Type\CollectionType':
                 return Property::TYPE_ARRAY;
-            case 'checkbox':
+            case 'Symfony\Component\Form\Extension\Core\Type\CheckboxType':
                 return Property::TYPE_BOOLEAN;
-            case 'number':
+            case 'Symfony\Component\Form\Extension\Core\Type\NumberType':
                 return Property::TYPE_NUMBER;
-            case 'integer':
+            case 'Symfony\Component\Form\Extension\Core\Type\IntegerType':
                 return Property::TYPE_INTEGER;
-            case 'date':
-            case 'datetime':
-            case 'text':
-            case 'textarea':
-            case 'country':
-            case 'email':
-            case 'file':
-            case 'language':
-            case 'locale':
-            case 'time':
-            case 'url':
+            default:
                 return Property::TYPE_STRING;
         }
     }
@@ -92,26 +83,12 @@ class FormTypeGuesserHandler implements PropertyHandlerInterface
     private function getPropertyFormat(TypeGuess $type)
     {
         switch ($type->getType()) {
-            case 'entity':
-            case 'collection':
-            case 'checkbox':
-            case 'number':
-            case 'integer':
-                break;
-            case 'date':
+            case 'Symfony\Component\Form\Extension\Core\Type\DateType':
                 return Property::FORMAT_DATE;
-            case 'datetime':
+            case 'Symfony\Component\Form\Extension\Core\Type\DateTimeType':
                 return Property::FORMAT_DATETIME;
-            case 'text':
-            case 'country':
-            case 'email':
-            case 'file':
-            case 'language':
-            case 'locale':
-                break;
-            case 'time':
+            case 'Symfony\Component\Form\Extension\Core\Type\TimeType':
                 return Property::FORMAT_TIME;
-            case 'url':
         }
     }
 }
