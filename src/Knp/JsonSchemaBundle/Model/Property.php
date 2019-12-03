@@ -118,7 +118,7 @@ class Property implements \JsonSerializable
 
     public function addType($type)
     {
-        if (!in_array($type, $this->type) && !is_null($type)) {
+        if (false === $this->multiple && !in_array($type, $this->type) && !is_null($type)) {
             $this->type[] = $type;
         }
 

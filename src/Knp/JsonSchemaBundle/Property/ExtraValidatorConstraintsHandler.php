@@ -34,8 +34,7 @@ class ExtraValidatorConstraintsHandler implements PropertyHandlerInterface
                 $property->setMinimum($constraint->min);
                 $property->setMaximum($constraint->max);
             }
-            if ($constraint instanceof \Symfony\Component\Validator\Constraints\Type &&
-                false === $property->getMultiple()) {
+            if ($constraint instanceof \Symfony\Component\Validator\Constraints\Type) {
                 $property->addType($this->getPropertyType($constraint));
                 if ('DateTime' === $constraint->type) {
                     $property->setFormat(Property::FORMAT_DATETIME);
