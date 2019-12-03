@@ -13,7 +13,7 @@ class Schema implements \JsonSerializable
     private $id;
     private $type;
     private $schema;
-    private $properties;
+    private $properties = [];
     private $additionalProperties;
     private $groups;
 
