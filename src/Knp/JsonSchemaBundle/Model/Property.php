@@ -424,10 +424,12 @@ class Property implements \JsonSerializable
                 $serialized = $serialized + $schema;
             }
         } else if ($this->multiple) {
-            $parentserialized = array();
-            $parentserialized['type'] = 'array';
-            $parentserialized['items'] = $serialized;
-            $serialized = $parentserialized;
+            // move 'type' and 'enum' inside 'items'
+            $itemsKeysMap = array('type' => null, 'enum' => null);
+            $itemsSerialized = array_intersect_key($serialized, $itemsKeysMap);
+            $serialized = array_diff_key($serialized, $itemsKeysMap);
+            $serialized['type'] = 'array';
+            $serialized['items'] = $itemsSerialized;
         }
 
         return $serialized;
