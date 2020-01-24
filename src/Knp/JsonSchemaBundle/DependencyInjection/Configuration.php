@@ -14,9 +14,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder
-            ->root('json_schema')
+        $treeBuilder = new TreeBuilder('json_schema');
+        $rootNode = $treeBuilder->getRootNode()
             ->children()
                 ->scalarNode('db_driver')
                     ->defaultValue('orm')
