@@ -120,6 +120,12 @@ services:
         tags:
             - { name: json_schema.property.handler, priority: 40 }
 
+    json_schema.property.handler.php_reflection_handler:
+        public: false
+        class: Knp\JsonSchemaBundle\Property\PhpReflectionTypedPropertiesHandler
+        tags:
+            - { name: json_schema.property.handler, priority: 50 }
+
     form.chain.guesser:
         public: false
         class: Symfony\Component\Form\FormTypeGuesserChain
