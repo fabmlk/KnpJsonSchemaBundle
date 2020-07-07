@@ -25,7 +25,7 @@ class SerializerReflectionConstraintsHandler implements PropertyHandlerInterface
             return;
         }
 
-        if ($name = $attributeMetadata->getSerializedName()) {
+        if (method_exists($attributeMetadata, 'getSerializedName') && $name = $attributeMetadata->getSerializedName()) {
             $property->setDisplayName($name);
         }
 

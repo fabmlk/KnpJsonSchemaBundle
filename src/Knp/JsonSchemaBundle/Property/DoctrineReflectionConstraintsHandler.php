@@ -4,7 +4,7 @@ namespace Knp\JsonSchemaBundle\Property;
 
 use Knp\JsonSchemaBundle\Model\Property;
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class DoctrineReflectionConstraintsHandler implements PropertyHandlerInterface
 {
@@ -19,32 +19,32 @@ class DoctrineReflectionConstraintsHandler implements PropertyHandlerInterface
     {
         $type = $this->getConstraintsForProperty($className, $property);
         
-        if (in_array($type, array(Type::BIGINT, Type::SMALLINT, Type::INTEGER))) {
+        if (in_array($type, array(Types::BIGINT, Types::SMALLINT, Types::INTEGER))) {
             $property->addType(Property::TYPE_INTEGER);
         }
-        if (in_array($type, array(Type::BIGINT, Type::SMALLINT, Type::INTEGER, Type::DECIMAL, Type::FLOAT))) {
+        if (in_array($type, array(Types::BIGINT, Types::SMALLINT, Types::INTEGER, Types::DECIMAL, Types::FLOAT))) {
             $property->addType(Property::TYPE_NUMBER);
         }
-        if (in_array($type, array(Type::STRING, Type::TEXT))) {
+        if (in_array($type, array(Types::STRING, Types::TEXT))) {
             $property->addType(Property::TYPE_STRING);
         }
-        if (in_array($type, array(Type::BOOLEAN))) {
+        if ($type == Types::BOOLEAN) {
             $property->addType(Property::TYPE_BOOLEAN);
         }
-        if (in_array($type, array(Type::TARRAY))) {
+        if ($type == Types::ARRAY) {
             $property->addType(Property::TYPE_ARRAY);
         }
-        if (in_array($type, array(Type::OBJECT))) {
+        if ($type == Types::OBJECT) {
             $property->setObject($this->em->getMetadataFactory()->getMetadataFor($className)->getAssociationTargetClass($property->getName()));
             $property->addType(Property::TYPE_OBJECT);
         }
-        if (in_array($type, array(Type::DATE))) {
+        if (in_array($type, array(Types::DATE_MUTABLE, Types::DATE_IMMUTABLE))) {
             $property->setFormat(Property::FORMAT_DATE);
         }
-        if (in_array($type, array(Type::DATETIME, Type::DATETIMETZ))) {
+        if (in_array($type, array(Types::DATETIME_MUTABLE, Types::DATETIMETZ_MUTABLE, Types::DATETIME_IMMUTABLE, Types::DATETIMETZ_IMMUTABLE))) {
             $property->setFormat(Property::FORMAT_DATETIME);
         }
-        if (in_array($type, array(Type::TIME))) {
+        if (in_array($type, array(Types::TIME_MUTABLE, Types::TIME_IMMUTABLE))) {
             $property->setFormat(Property::FORMAT_TIME);
         }
     }
@@ -66,8 +66,8 @@ class DoctrineReflectionConstraintsHandler implements PropertyHandlerInterface
 
         foreach ($classMetadata->getAssociationNames() as $associationName) {
             if ($associationName === $property->getName()) {
-                return ($classMetadata->isSingleValuedAssociation($associationName) ? Type::OBJECT : 
-                       ($classMetadata->isCollectionValuedAssociation($associationName) ? Type::TARRAY : Property::TYPE_NULL));
+                return ($classMetadata->isSingleValuedAssociation($associationName) ? Types::OBJECT :
+                       ($classMetadata->isCollectionValuedAssociation($associationName) ? Types::ARRAY : Property::TYPE_NULL));
             }
         }
 
